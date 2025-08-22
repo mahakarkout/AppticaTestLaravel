@@ -1,11 +1,14 @@
 <?php
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\DB;
-use App\Models\AppTopPosition;
-use Illuminate\Support\Facades\Log;
 use App\Http\Requests\AppTopCategoryRequest;
 use App\Services\Contracts\AppTopFetcherInterface;
+use App\Http\Helpers\RequestLogger;
+use App\Http\Helpers\ApiResponder;
+use App\Http\Helpers\PositionHelper;
+use Illuminate\Http\JsonResponse;
+
+
 
 class AppTopCategoryController extends Controller
 {
@@ -16,35 +19,22 @@ class AppTopCategoryController extends Controller
         $this->fetcher = $fetcher;
     }
 
-    public function __invoke(AppTopCategoryRequest $request)
+    public function __invoke(AppTopCategoryRequest $request): JsonResponse
     {
         $date = $request->validated()['date'];
 
-        Log::info('AppTopCategory endpoint hit', [
-            'ip' => $request->ip(),
-            'date_param' => $date,
-            'timestamp' => now()->toDateTimeString()
-        ]);
+        RequestLogger::log($request->ip(), $date);
 
-        $stored = $this->fetcher->fetchAndStore($date);
-
-        if (isset($stored['error'])) {
-            return response()->json(['error' => $stored['error']], 500);
+        $result = $this->fetcher->fetchAndStore($date);
+        if (isset($result['error'])) {
+            return ApiResponder::error('API fetch failed', 500);
         }
 
-        $positions = AppTopPosition::where('date', $date)
-            ->select('category_id', DB::raw('MIN(position) as min_position'))
-            ->groupBy('category_id')
-            ->pluck('min_position', 'category_id');
-
+        $positions = PositionHelper::getMinPositionsGroupedByCategory($date);
         if ($positions->isEmpty()) {
-            return response()->json(['message' => 'No data found for this date'], 404);
+            return ApiResponder::error('No data found for this date', 404);
         }
 
-        return response()->json([
-            'status_code' => 200,
-            'message' => 'ok',
-            'data' => $positions
-        ]);
+        return ApiResponder::success($positions);
     }
 }
