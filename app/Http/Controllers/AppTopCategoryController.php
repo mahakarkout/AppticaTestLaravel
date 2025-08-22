@@ -1,53 +1,32 @@
 <?php
-
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\DB;
-use Illuminate\Http\Request;
-use App\Services\AppticaTopService;
 use App\Models\AppTopPosition;
 use Illuminate\Support\Facades\Log;
+use App\Http\Requests\AppTopCategoryRequest;
+use App\Services\Contracts\AppTopFetcherInterface;
 
 class AppTopCategoryController extends Controller
 {
+    protected AppTopFetcherInterface $fetcher;
 
-    protected $service;
-
-    public function __construct(AppticaTopService $service)
+    public function __construct(AppTopFetcherInterface $fetcher)
     {
-        $this->service = $service;
+        $this->fetcher = $fetcher;
     }
-    public function index(Request $request)
+
+    public function __invoke(AppTopCategoryRequest $request)
     {
+        $date = $request->validated()['date'];
+
         Log::info('AppTopCategory endpoint hit', [
             'ip' => $request->ip(),
-            'date_param' => $request->query('date'),
+            'date_param' => $date,
             'timestamp' => now()->toDateTimeString()
         ]);
 
-        try {
-            $validated = $request->validate([
-                'date' => [
-                    'required',
-                    'regex:/^\d{4}-\d{2}-\d{2}$/',
-                    function ($attribute, $value, $fail) {
-                        $parts = explode('-', $value);
-                        if (count($parts) !== 3 || !checkdate((int)$parts[1], (int)$parts[2], (int)$parts[0])) {
-                            $fail("The $attribute must be a real calendar date in the format YYYY-MM-DD.");
-                        }
-                    }
-                ]
-            ]);
-        } catch (\Illuminate\Validation\ValidationException $e) {
-            return response()->json([
-                'status_code' => 422,
-                'message' => 'Validation failed',
-                'errors' => $e->errors()
-            ], 422);
-        }
-
-        $date = $request->query('date', now()->toDateString());
-
-        $stored = $this->service->fetchAndStore($date);
+        $stored = $this->fetcher->fetchAndStore($date);
 
         if (isset($stored['error'])) {
             return response()->json(['error' => $stored['error']], 500);
@@ -68,5 +47,4 @@ class AppTopCategoryController extends Controller
             'data' => $positions
         ]);
     }
-
 }

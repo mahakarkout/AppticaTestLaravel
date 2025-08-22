@@ -6,4 +6,5 @@ use App\Http\Controllers\AppTopCategoryController;
 
 Route::apiResource('apps', AppController::class);
 //Route::get('/appTopCategory', [AppTopCategoryController::class, 'index']);
-Route::middleware('throttle:5,1')->get('/appTopCategory', [AppTopCategoryController::class, 'index'])->name('appTopCategory');
+//Route::middleware('throttle:5,1')->get('/appTopCategory', [AppTopCategoryController::class, 'index'])->name('appTopCategory');
+Route::middleware('throttle:5,1')->get('/appTopCategory', AppTopCategoryController::class);
