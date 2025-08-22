@@ -51,7 +51,7 @@ API-сервис на Laravel, который получает, обрабаты
 
 *(where "2" and "23" are category IDs and values are best positions)*
 
-📷 ![Скриншот: Resonse Example](screenshots/response example.png)
+📷 ![Скриншот: Resonse Example](screenshots/responseExample.png)
 
 ---
 
@@ -126,7 +126,7 @@ http://localhost:9000/api/appTopCategory?date=2025-08-18
 }
 ```
 
-![Скриншот: attempts limit](screenshots/limited attempts.png)
+![Скриншот: limitedAttempts](screenshots/limitedAttempts.png)
 ---
 
 ### 2. Логирование
@@ -166,7 +166,7 @@ php artisan test --filter=AppTopCategoryApiTest
 
 - Обработка таймаута API
 
-![Скриншот: Testing](screenshots/test cases.png)
+![Скриншот: Testing](screenshots/testCases.png)
 
 ---
 
