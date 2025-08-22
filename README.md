@@ -177,21 +177,29 @@ php artisan test --filter=AppTopCategoryApiTest
 │   ├── Http/
 │   │   ├── Controllers/
 │   │   │   └── AppTopCategoryController.php
-│   │   └── Requests/
-│   │       └── AppTopCategoryRequest.php
-│   ├── Models/
-│   │   └── AppTopPosition.php
-│   ├── Providers/
-│   │   └── AppServiceProvider.php
+│   │   ├── Requests/
+│   │   │   └── AppTopCategoryRequest.php
+│   │   └── Helpers/
+│   │       ├── DateHelper.php
+│   │       ├── RequestLogger.php
+│   │       ├── ApiResponder.php
+│   │       └── PositionHelper.php
 │   ├── Services/
-│   │   ├── Contracts/
-│   │   │   └── AppTopFetcherInterface.php
-│   │   └── AppticaTopService.php
+│   │   ├── AppticaTopService.php
+│   │   └── Contracts/
+│   │       └── AppTopFetcherInterface.php
+│   └── Models/
+│       └── AppTopPosition.php
+│
 ├── routes/
 │   └── api.php
+│
 ├── tests/
 │   └── Feature/
 │       └── AppTopCategoryTest.php
+│
+├── .env.example
+├── README.md
 
 ```
 

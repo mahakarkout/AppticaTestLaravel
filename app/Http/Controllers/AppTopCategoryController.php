@@ -6,9 +6,8 @@ use App\Services\Contracts\AppTopFetcherInterface;
 use App\Http\Helpers\RequestLogger;
 use App\Http\Helpers\ApiResponder;
 use App\Http\Helpers\PositionHelper;
+use App\Http\Helpers\DateHelper;
 use Illuminate\Http\JsonResponse;
-
-
 
 class AppTopCategoryController extends Controller
 {
@@ -21,20 +20,17 @@ class AppTopCategoryController extends Controller
 
     public function __invoke(AppTopCategoryRequest $request): JsonResponse
     {
-        $date = $request->validated()['date'];
+        $date = DateHelper::getValidatedDate($request);
 
         RequestLogger::log($request->ip(), $date);
 
         $result = $this->fetcher->fetchAndStore($date);
-        if (isset($result['error'])) {
-            return ApiResponder::error('API fetch failed', 500);
+
+        $errorResponse = ApiResponder::handleFetchResult($result);
+        if ($errorResponse) {
+            return $errorResponse;
         }
 
-        $positions = PositionHelper::getMinPositionsGroupedByCategory($date);
-        if ($positions->isEmpty()) {
-            return ApiResponder::error('No data found for this date', 404);
-        }
-
-        return ApiResponder::success($positions);
+        return PositionHelper::getResponseOrNotFound($date);
     }
 }
