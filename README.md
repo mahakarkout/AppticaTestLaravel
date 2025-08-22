@@ -174,13 +174,25 @@ php artisan test --filter=AppTopCategoryApiTest
 
 ```
 ├── app/
-│   ├── Http/Controllers/AppTopCategoryController.php
-│   ├── Services/AppticaTopService.php
-│   ├── Models/AppTopPosition.php
+│   ├── Http/
+│   │   ├── Controllers/
+│   │   │   └── AppTopCategoryController.php
+│   │   └── Requests/
+│   │       └── AppTopCategoryRequest.php
+│   ├── Models/
+│   │   └── AppTopPosition.php
+│   ├── Providers/
+│   │   └── AppServiceProvider.php
+│   ├── Services/
+│   │   ├── Contracts/
+│   │   │   └── AppTopFetcherInterface.php
+│   │   └── AppticaTopService.php
 ├── routes/
 │   └── api.php
 ├── tests/
-│   ├── Feature/AppTopCategoryTest.php
+│   └── Feature/
+│       └── AppTopCategoryTest.php
+
 ```
 
 ---
